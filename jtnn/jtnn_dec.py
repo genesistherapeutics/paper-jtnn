@@ -70,7 +70,7 @@ class JTNNDecoder(nn.Module):
         padding = create_var(torch.zeros(self.hidden_size), False)
         h = {}
 
-        for t in xrange(max_iter):
+        for t in range(max_iter):
             prop_list = []
             batch_list = []
             for i,plist in enumerate(traces):
@@ -203,7 +203,7 @@ class JTNNDecoder(nn.Module):
 
         all_nodes = [root]
         h = {}
-        for step in xrange(MAX_DECODE_LEN):
+        for step in range(MAX_DECODE_LEN):
             node_x,fa_slot = stack[-1]
             cur_h_nei = [ h[(node_y.idx,node_x.idx)] for node_y in node_x.neighbors ]
             if len(cur_h_nei) > 0:
@@ -229,7 +229,7 @@ class JTNNDecoder(nn.Module):
                 new_h = GRU(cur_x, cur_h_nei, self.W_z, self.W_r, self.U_r, self.W_h)
                 pred_hidden = torch.cat([new_h,mol_vec], dim=1)
                 pred_hidden = nn.ReLU()(self.W(pred_hidden))
-                pred_score = nn.Softmax()(self.W_o(pred_hidden) * 20)
+                pred_score = nn.Softmax(dim=-1)(self.W_o(pred_hidden) * 20)
                 if prob_decode:
                     sort_wid = torch.multinomial(pred_score.data.squeeze(), 5)
                 else:
